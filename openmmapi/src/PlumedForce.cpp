@@ -41,6 +41,27 @@ PlumedForce::PlumedForce(const string& script) : script(script), temperature(-1)
     logStream(stdout), restart(false) {
 }
 
+PlumedForce::PlumedForce(const string& script, const MPI_Comm& comm, const int& rank_mod) :
+    script(script), temperature(-1), logStream(stdout), restart(false) {
+    int rank, size;
+    MPI_Comm_rank(comm, &rank);
+    MPI_Comm_size(comm, &size);
+    cout << "rank_mod: " << rank_mod << endl;
+    cout << "size: " << size << endl;
+    cout << "rank: " << rank << endl;
+    bool in_new_comm = (rank % rank_mod == 0);
+    cout << "in_new_comm: " << in_new_comm << endl;
+    MPI_Comm_split(comm, in_new_comm, rank, &sub_comm);
+    if (in_new_comm) {
+        int new_rank, new_size;
+        MPI_Comm_rank(sub_comm, &new_rank);
+        MPI_Comm_size(sub_comm, &new_size);
+        cout << "new_size: " << new_size << endl;
+        cout << "new_rank: " << new_rank << endl;
+    }
+
+}
+
 const string& PlumedForce::getScript() const {
     return script;
 }

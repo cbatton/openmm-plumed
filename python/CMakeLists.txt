@@ -8,7 +8,8 @@ add_custom_command(
     COMMAND "${SWIG_EXECUTABLE}"
         -python -c++
         -o "${WRAP_FILE}"
-        "-I${OPENMM_DIR}/include"
+        -I"${OPENMM_DIR}/include"
+        -I"${MPI_CXX_INCLUDE_PATH}"
         "${CMAKE_CURRENT_SOURCE_DIR}/plumedplugin.i"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/plumedplugin.i"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"

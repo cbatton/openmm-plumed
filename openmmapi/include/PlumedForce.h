@@ -37,6 +37,7 @@
 #include <cstdio>
 #include <string>
 #include "internal/windowsExportPlumed.h"
+#include <mpi.h>
 
 namespace PlumedPlugin {
 
@@ -66,6 +67,15 @@ public:
      * @param script    the PLUMED input script
      */
     PlumedForce(const std::string& script);
+    /**
+     * Create a PlumedForce with MPI support.
+     *
+     * @param script    the PLUMED input script
+     * @param comm      the MPI communicator
+     * @param world_rank the MPI rank of the world communicator
+     * @param rank_mod  the modulo to take the rank of the world communicator
+     */
+    PlumedForce(const std::string& script, const MPI_Comm& comm, const int& rank_mod);
     /**
      * Get the PLUMED input script
      */
@@ -119,6 +129,7 @@ public:
     bool getRestart() const;
 protected:
     OpenMM::ForceImpl* createImpl() const;
+    MPI_Comm sub_comm;
 private:
     std::string script;
     double temperature;
