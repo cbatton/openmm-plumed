@@ -28,7 +28,7 @@ int isNumpyAvailable() {
 import openmm as mm
 %}
 
-%include /home/clay/software/pytorch_build/conda/pytorch/2.3.1/lib/python3.11/site-packages/mpi4py/include/mpi4py/mpi4py.i
+%include <mpi4py/mpi4py.i>
 %mpi4py_typemap(Comm, MPI_Comm);
 
 namespace PlumedPlugin {

@@ -1,6 +1,14 @@
 set(WRAP_FILE PlumedPluginWrapper.cpp)
 set(MODULE_NAME openmmplumed)
 
+# Find python
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" -c "import mpi4py; print(mpi4py.get_include())"
+    OUTPUT_VARIABLE MPI4PY_INCLUDE_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 # Execute SWIG to generate source code for the Python module.
 
 add_custom_command(
@@ -10,6 +18,7 @@ add_custom_command(
         -o "${WRAP_FILE}"
         -I"${OPENMM_DIR}/include"
         -I"${MPI_CXX_INCLUDE_PATH}"
+        -I"${MPI4PY_INCLUDE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/plumedplugin.i"
     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/plumedplugin.i"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"

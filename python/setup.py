@@ -14,7 +14,7 @@ openmmplumed_library_dir = '@OPENMMPLUMED_LIBRARY_DIR@'
 
 # setup extra compile and link arguments on Mac
 extra_compile_args=['-std=c++11']
-extra_link_args = []
+extra_link_args = ["-I"+mpi4py.get_include()]
 
 if platform.system() == 'Darwin':
     extra_compile_args += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
@@ -25,6 +25,7 @@ extension = Extension(name='_openmmplumed',
                       libraries=['OpenMM', 'OpenMMPlumed'],
                       include_dirs=[os.path.join(openmm_dir, 'include'), openmmplumed_header_dir, numpy.get_include(), mpi4py.get_include()],
                       library_dirs=[os.path.join(openmm_dir, 'lib'), openmmplumed_library_dir],
+                      swig_opts=["-I"+mpi4py.get_include()],
                       extra_compile_args=extra_compile_args,
                       extra_link_args=extra_link_args
                      )
