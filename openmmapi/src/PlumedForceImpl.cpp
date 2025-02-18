@@ -34,6 +34,7 @@
 #include "openmm/internal/ContextImpl.h"
 #include "openmm/NonbondedForce.h"
 #include "openmm/reference/SimTKOpenMMRealType.h"
+#include <mpi.h>
 
 using namespace PlumedPlugin;
 using namespace OpenMM;
@@ -55,6 +56,12 @@ void PlumedForceImpl::initialize(ContextImpl& context) {
 
     plumedmain = plumed_create();
     hasInitialized = true;
+    MPI_Comm comm = owner.getMPIComm();
+    MPI_Comm fake_comm = owner.getMPICommFake();
+    if (comm != MPI_COMM_NULL) {
+        plumed_cmd(plumedmain, "setMPIComm", &fake_comm);
+        plumed_cmd(plumedmain, "setMPImultiSimComm", &comm);
+    }
     int apiVersion;
     plumed_cmd(plumedmain, "getApiVersion", &apiVersion);
     if (apiVersion < 4)
@@ -92,7 +99,6 @@ void PlumedForceImpl::initialize(ContextImpl& context) {
         }
     }
     usesPeriodic = system.usesPeriodicBoundaryConditions();
-
     // Record the particle masses.
 
     masses.resize(numParticles);
@@ -143,8 +149,8 @@ double PlumedForceImpl::computeForce(ContextImpl& context, const vector<Vec3>& p
     plumed_cmd(plumedmain, "prepareCalc", NULL);
     plumed_cmd(plumedmain, "performCalcNoUpdate", NULL);
     if (step != lastStepIndex) {
-        plumed_cmd(plumedmain, "update", NULL);
-        lastStepIndex = step;
+         plumed_cmd(plumedmain, "update", NULL);
+         lastStepIndex = step;
     }
     double energy = 0;
     plumed_cmd(plumedmain, "getBias", &energy);

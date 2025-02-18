@@ -72,7 +72,6 @@ public:
      *
      * @param script    the PLUMED input script
      * @param comm      the MPI communicator
-     * @param world_rank the MPI rank of the world communicator
      * @param rank_mod  the modulo to take the rank of the world communicator
      */
     PlumedForce(const std::string& script, const MPI_Comm& comm, const int& rank_mod);
@@ -127,9 +126,18 @@ public:
      * Get the state of PLUMED restart.
      */
     bool getRestart() const;
+    /**
+     * Get the MPI communicator.
+     */
+    const MPI_Comm& getMPIComm() const;
+    /**
+     * Get the fake MPI communicator.
+     */
+    const MPI_Comm& getMPICommFake() const;
 protected:
     OpenMM::ForceImpl* createImpl() const;
-    MPI_Comm sub_comm;
+    MPI_Comm sub_comm = MPI_COMM_NULL;
+    MPI_Comm fake_comm = MPI_COMM_NULL;
 private:
     std::string script;
     double temperature;
